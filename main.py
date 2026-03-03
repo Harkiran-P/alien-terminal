@@ -12,7 +12,7 @@ window_width = 1280
 window_height = 720
 
 border_color = (49, 230, 59)
-bg_color = (18, 8, 32)
+bg_color = (14, 4, 28)
 
 CHAR_Land = '.,-~:;=+*#$@'
 CHAR_Ocean = ' ..`.. '
@@ -138,7 +138,7 @@ while True:
     title_text = font_big.render("PLANET EARTH", True, border_color)
     text_width = topline.get_width()
 
-    window.blit(title_text, (text_x + 30, 150))
+    window.blit(title_text, (text_x + 5, 620))
 
     # ASCII globe
     draw_globe(window, font_small, (window_width // 2), (window_height // 2), 200, rotation)
