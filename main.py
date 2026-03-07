@@ -23,6 +23,27 @@ border = 20
 text_x = 40
 text_gap = 16
 
+# panel config
+panel_target_w = int(window_width * 0.25) 
+panel_target_h = window_height - (border * 2) - 1 
+panel_target_x = window_width - border - panel_target_w
+panel_target_y = border
+
+# button config 
+btn_w = 70
+btn_h = 50
+btn_x = window_width - border - btn_w - 20
+btn_y = 620
+
+# panel state
+IDLE = 'idle'
+EXPANDING = 'expanding'
+OPEN = 'open'
+
+panel_state = IDLE
+anim_progress = 0.0  
+anim_speed = 0.04  
+
 # setup
 pygame.init() 
 window = pygame.display.set_mode((window_width, window_height))
@@ -113,20 +134,28 @@ def draw_globe(surface, font, cx, cy, radius, rotation):
 rotation = 0
 
 # scan button
+
+def on_scan_click():
+    global panel_state, anim_progress
+    if panel_state == IDLE:
+        panel_state = EXPANDING
+        anim_progress = 0.0
+
 scanButton = Button(
-    window, window_width - 150, 620, 70, 50,
+    window, btn_x, btn_y, btn_w, btn_h,
     text='Scan',
     fontSize=20, margin=20,
     inactiveColour=bg_color,
-    borderColour=border_color,      
+    borderColour=border_color,
     borderThickness=1,
     textColour=border_color,
-    onClick=lambda: print('Click')
+    onClick=on_scan_click
 )
 
 # main loop
 while True:
     events = pygame.event.get()
+    widgets.update(events)
 
     for event in events:
         if event.type == pygame.QUIT:
@@ -161,8 +190,23 @@ while True:
     rotation += 0.3
 
     # scan button use
-    scanButton.listen(events)
-    scanButton.draw()
+    if panel_state == EXPANDING:
+        anim_progress = min(1.0, anim_progress + anim_speed)
+        if anim_progress >= 1.0:
+            panel_state = OPEN
+    
+    if panel_state == IDLE:
+        scanButton.listen(events)
+        scanButton.draw()
+    else:
+        ease = 1 - (1 - anim_progress) ** 3 
+        cur_w = int(btn_w + (panel_target_w - btn_w) * ease)
+        cur_h = int(btn_h + (panel_target_h - btn_h) * ease)
+        cur_x = int(btn_x + (panel_target_x - btn_x) * ease)
+        cur_y = int(btn_y + (panel_target_y - btn_y) * ease)
+        
+        pygame.draw.rect(window, bg_color, (cur_x, cur_y, cur_w, cur_h))
+        pygame.draw.rect(window, border_color, (cur_x, cur_y, cur_w, cur_h), 1)
 
     # glitch lines
     if random.randint(0, 120) == 0:
