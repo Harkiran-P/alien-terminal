@@ -1,4 +1,6 @@
 import pygame
+import pygame_widgets as widgets
+from pygame_widgets.button import Button
 import random
 
 import math
@@ -110,9 +112,23 @@ def draw_globe(surface, font, cx, cy, radius, rotation):
                     
 rotation = 0
 
+# scan button
+scanButton = Button(
+    window, window_width - 150, 620, 70, 50,
+    text='Scan',
+    fontSize=20, margin=20,
+    inactiveColour=bg_color,
+    borderColour=border_color,      
+    borderThickness=1,
+    textColour=border_color,
+    onClick=lambda: print('Click')
+)
+
 # main loop
 while True:
-    for event in pygame.event.get():
+    events = pygame.event.get()
+
+    for event in events:
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
@@ -143,6 +159,10 @@ while True:
     # ASCII globe
     draw_globe(window, font_small, (window_width // 2), (window_height // 2), 200, rotation)
     rotation += 0.3
+
+    # scan button use
+    scanButton.listen(events)
+    scanButton.draw()
 
     # glitch lines
     if random.randint(0, 120) == 0:
